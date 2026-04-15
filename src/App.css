@@ -111,6 +111,13 @@
   border-color: var(--color-accent-primary);
 }
 
+.search-spinner {
+  margin-top: 0.75rem;
+  color: var(--color-accent-primary);
+  font-weight: 600;
+  font-size: 0.95em;
+}
+
 .results-list {
   display: flex;
   flex-direction: column;
@@ -131,7 +138,6 @@
   border-left: 4px solid var(--color-accent-primary);
   padding: 1rem 1.5rem;
   box-shadow: 0 2px 8px var(--shadow-warm);
-  cursor: pointer;
   transition: box-shadow 0.2s;
 }
 
@@ -143,6 +149,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
 }
 
 .song-info {
@@ -159,6 +166,32 @@
 .song-artist {
   color: var(--color-text-secondary);
   font-size: 0.95em;
+}
+
+.song-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tab-count-badge {
+  background-color: var(--color-accent-tertiary);
+  color: var(--color-bg-primary);
+  padding: 0.15em 0.7em;
+  border-radius: 50px;
+  font-size: 0.78em;
+  font-weight: 700;
+}
+
+.expand-arrow {
+  display: inline-block;
+  font-size: 0.85em;
+  color: var(--color-text-secondary);
+  transition: transform 0.25s ease;
+}
+
+.expand-arrow.expanded {
+  transform: rotate(90deg);
 }
 
 .favorite-btn {
@@ -189,6 +222,20 @@
   padding-left: 1rem;
 }
 
+.tab-group {
+  margin-bottom: 1rem;
+}
+
+.tab-group-title {
+  font-family: var(--font-body);
+  font-size: 0.9em;
+  font-weight: 700;
+  color: var(--color-accent-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
 .tab-card {
   background-color: var(--color-bg-primary);
   border-radius: 8px;
@@ -205,6 +252,12 @@
   color: var(--color-text-secondary);
 }
 
+.tab-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .tab-content {
   font-family: 'Courier New', 'Source Code Pro', monospace;
   white-space: pre;
@@ -214,6 +267,18 @@
   background-color: var(--color-bg-card);
   padding: 1rem;
   border-radius: 8px;
+}
+
+.tab-content.chord-chart {
+  font-size: 1em;
+  line-height: 1.8;
+}
+
+.tab-loading,
+.tab-empty {
+  color: var(--color-text-secondary);
+  font-style: italic;
+  padding: 0.5rem 0;
 }
 
 .badge-pending {
