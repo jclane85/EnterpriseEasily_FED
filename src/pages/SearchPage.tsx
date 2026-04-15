@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { searchSongs, setAuthToken, type SongDto } from '../services/api'
+import { searchSongs, setAuthToken, getFavoriteIds, type SongDto } from '../services/api'
 import { useDebounce } from '../hooks/useDebounce'
 import SongRow from '../components/SongRow'
 
@@ -13,45 +13,84 @@ export default function SearchPage() {
   const [pageSize] = useState(20)
   const [searching, setSearching] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set())
 
   const debouncedQuery = useDebounce(query, 300)
+  const getTokenRef = useRef(getAccessTokenSilently)
+  getTokenRef.current = getAccessTokenSilently
 
-  const doSearch = useCallback(
-    async (q: string, p: number) => {
-      if (q.length < 2) {
-        setResults([])
-        setTotalCount(0)
-        setHasSearched(false)
-        return
-      }
-
-      setSearching(true)
+  // Load user's favorite IDs on mount
+  useEffect(() => {
+    ;(async () => {
       try {
-        const token = await getAccessTokenSilently()
+        const token = await getTokenRef.current()
         setAuthToken(token)
-        const data = await searchSongs(q, p)
-        setResults(data.songs)
-        setTotalCount(data.totalCount)
-        setHasSearched(true)
+        const ids = await getFavoriteIds()
+        setFavoriteIds(new Set(ids))
       } catch (err) {
-        console.error('Search failed:', err)
-      } finally {
-        setSearching(false)
+        console.error('Failed to load favorites:', err)
       }
-    },
-    [getAccessTokenSilently]
-  )
+    })()
+  }, [])
+
+  const handleFavoriteToggle = useCallback((songId: string, favorited: boolean) => {
+    setFavoriteIds(prev => {
+      const next = new Set(prev)
+      if (favorited) next.add(songId)
+      else next.delete(songId)
+      return next
+    })
+  }, [])
 
   // Trigger search when debounced query changes
   useEffect(() => {
-    setPage(1)
-    doSearch(debouncedQuery, 1)
-  }, [debouncedQuery, doSearch])
+    const q = debouncedQuery
+    if (q.length < 2) {
+      setResults([])
+      setTotalCount(0)
+      setHasSearched(false)
+      return
+    }
 
-  // Trigger search when page changes (but not from debounce reset)
-  const handlePageChange = (newPage: number) => {
+    let cancelled = false
+    setSearching(true)
+    setPage(1)
+
+    ;(async () => {
+      try {
+        const token = await getTokenRef.current()
+        setAuthToken(token)
+        const data = await searchSongs(q, 1)
+        if (!cancelled) {
+          setResults(data.songs)
+          setTotalCount(data.totalCount)
+          setHasSearched(true)
+        }
+      } catch (err) {
+        if (!cancelled) console.error('Search failed:', err)
+      } finally {
+        if (!cancelled) setSearching(false)
+      }
+    })()
+
+    return () => { cancelled = true }
+  }, [debouncedQuery])
+
+  // Trigger search when page changes
+  const handlePageChange = async (newPage: number) => {
     setPage(newPage)
-    doSearch(debouncedQuery, newPage)
+    setSearching(true)
+    try {
+      const token = await getTokenRef.current()
+      setAuthToken(token)
+      const data = await searchSongs(debouncedQuery, newPage)
+      setResults(data.songs)
+      setTotalCount(data.totalCount)
+    } catch (err) {
+      console.error('Search failed:', err)
+    } finally {
+      setSearching(false)
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -80,7 +119,12 @@ export default function SearchPage() {
         )}
 
         {results.map((song) => (
-          <SongRow key={song.id} song={song} />
+          <SongRow
+            key={song.id}
+            song={song}
+            isFavorited={favoriteIds.has(song.id)}
+            onFavoriteToggle={handleFavoriteToggle}
+          />
         ))}
       </div>
 

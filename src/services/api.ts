@@ -61,4 +61,22 @@ export async function submitTab(songId: string, request: SubmitTabRequest): Prom
   return data
 }
 
+export async function getFavorites(): Promise<SongDto[]> {
+  const { data } = await api.get<SongDto[]>('/api/favorites')
+  return data
+}
+
+export async function getFavoriteIds(): Promise<string[]> {
+  const { data } = await api.get<string[]>('/api/favorites/ids')
+  return data
+}
+
+export async function addFavorite(songId: string): Promise<void> {
+  await api.post(`/api/favorites/${songId}`)
+}
+
+export async function removeFavorite(songId: string): Promise<void> {
+  await api.delete(`/api/favorites/${songId}`)
+}
+
 export default api

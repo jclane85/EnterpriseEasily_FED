@@ -290,6 +290,57 @@
   font-weight: 700;
 }
 
+/* Tab Submit Form */
+.submit-tab-btn {
+  margin-top: 0.75rem;
+  font-size: 0.9em;
+}
+
+.submit-tab-form {
+  margin-top: 1rem;
+  background-color: var(--color-bg-primary);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.submit-tab-type {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.submit-tab-type label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submit-tab-textarea {
+  width: 100%;
+  font-family: 'Courier New', 'Source Code Pro', monospace;
+  font-size: 0.9em;
+  line-height: 1.4;
+  padding: 0.75rem;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  background-color: var(--color-bg-card);
+  color: var(--color-text-primary);
+  resize: vertical;
+}
+
+.submit-tab-textarea:focus {
+  outline: none;
+  border-color: var(--color-accent-primary);
+}
+
+.submit-tab-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
 /* Pagination */
 .pagination {
   display: flex;
@@ -329,4 +380,40 @@
 /* Favorites Page */
 .favorites-page {
   text-align: center;
+}
+
+.favorites-page .results-list {
+  text-align: left;
+}
+
+.favorites-loading {
+  color: var(--color-text-muted);
+  margin-top: 2rem;
+}
+
+/* Favorite Button */
+.favorite-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0.1em 0.3em;
+  line-height: 1;
+  color: var(--color-text-muted);
+  transition: color 0.2s, transform 0.2s;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.2);
+  color: #e74c3c;
+}
+
+.favorite-btn.favorited {
+  color: #e74c3c;
+}
+
+.favorite-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
 }
